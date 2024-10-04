@@ -9,13 +9,18 @@ typedef struct {
     char operand[SIZE];
 } Instruction;
 
+typedef struct {
+    char key[SIZE];
+    char value[SIZE];
+} Symbol;
+
 void split_string_by_instruct(char *str, const char *delim, Instruction instructions[], int *size) {
     int i = 0;
     char *arr[100];
     const char *token = strtok(str, delim);
 
     while (token != NULL && i < 100) {
-        arr[i] = (char *)malloc(strlen(token) + 1);
+        arr[i] = (char *) malloc(strlen(token) + 1);
         if (arr[i] == NULL) {
             perror("Failed to allocate memory");
             exit(EXIT_FAILURE);
@@ -24,7 +29,7 @@ void split_string_by_instruct(char *str, const char *delim, Instruction instruct
         token = strtok(NULL, delim);
     }
 
-    if(i > 3 || i == 0) {
+    if (i > 3 || i == 0) {
         perror("Error: Invalid instruction format\n");
         exit(1);
     }
@@ -38,8 +43,38 @@ void split_string_by_instruct(char *str, const char *delim, Instruction instruct
         free(arr[j]);
 }
 
+void search_opcode(FILE *fp, char *operator) {
+
+}
+
+void assemble_code(Instruction instructions[], int size, Symbol symbols[], int *symbol_size) {
+    int LOCCTR = 0;
+    int PGM_LENGTH = 0;
+    int START_ADDR = LOCCTR;
+
+    for (int i = 0; i < size; i++) {
+        if (strcmp(instructions[i].operator, "START") == 0) {
+            START_ADDR = atoi(instructions[i].operand);
+            LOCCTR = START_ADDR;
+        } else if (strcmp(instructions[i].operator, "END") == 0) {
+            PGM_LENGTH = LOCCTR - START_ADDR;
+            break;
+        } else if() {
+
+        }
+        // else {
+        //     if (strcmp(instructions[i].label, "") != 0) {
+        //         strcpy(symbols[(*symbol_size)].key, instructions[i].label);
+        //         sprintf(symbols[(*symbol_size)++].value, "%d", LOCCTR);
+        //     }
+        //     LOCCTR += 3;
+        // }
+    }
+}
+
 int main() {
     FILE *input_fp = fopen("inputs/input.txt", "r");
+    FILE *optab_fp = fopen("inputs/optab.txt", "r");
 
     if (input_fp == NULL) {
         perror("Error: File not found\n");
@@ -48,18 +83,17 @@ int main() {
 
     char *buffer = NULL;
     size_t bufsize = 0;
+
     Instruction instructions[SIZE];
     int size;
+    Symbol symtab[SIZE];
+    int symtab_size = 0;
 
     while (getline(&buffer, &bufsize, input_fp) != -1)
         split_string_by_instruct(buffer, " ", instructions, &size);
 
-    // for(int i = 0; i < size; i++) {
-    //     printf("-----------------------------\n");
-    //     printf("Label: %s\n", instructions[i].label);
-    //     printf("Operator: %s\n", instructions[i].operator);
-    //     printf("Operand: %s\n", instructions[i].operand);
-    // }
+    assemble_code(instructions, size, symtab, &symtab_size);
+
 
     // Clean up
     free(buffer);
